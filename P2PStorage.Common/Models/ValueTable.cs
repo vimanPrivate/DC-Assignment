@@ -9,7 +9,7 @@ namespace P2PStorage.Common.Models
 {
     public class ValueTable
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public string Value { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using P2PStorage.Common.Models;
+﻿using P2PStorage.Common.Enums;
+using P2PStorage.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,13 @@ namespace P2PStorage.Service.Services.Node
         private List<ValueTable> _valueTable;
         public bool isLeader;
         public int nodeId;
+        public NodeRoleEnum Role;
 
         public NodeService() 
         { 
             _nodeTable = new List<NodeTable>();
             _valueTable = new List<ValueTable>();
+            nodeId = -999;
         }
 
         public void AddValuesToNodeTable(NodeTable nodeTable)
@@ -25,13 +28,12 @@ namespace P2PStorage.Service.Services.Node
             _nodeTable.Add(nodeTable);
         }
 
-        public void AddValuesToValueTable(string val) 
+        public void AddValuesToValueTable(string sentence) 
         {
-            var guid = Guid.NewGuid();
             var tmpValueTbl = new ValueTable()
             {
-                Id = guid,
-                Value = val
+                Id = sentence.Substring(0,Math.Min(sentence.Length,10)),
+                Value = sentence
             };
 
             _valueTable.Add(tmpValueTbl);
