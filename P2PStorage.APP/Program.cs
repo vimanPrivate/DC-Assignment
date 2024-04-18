@@ -1,10 +1,12 @@
 ﻿using P2PStorage.Common.Enums;
+using P2PStorage.Common.Models;
 using P2PStorage.Service.Services.Node;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace P2PStorage.APP
 {
@@ -67,8 +69,31 @@ namespace P2PStorage.APP
                 }
             }
 
+
+            Node nodeOne = new Node(0);
+            Node nodeTwo = new Node(1);
+            Node nodeThree = new Node(2);
+
+            // Connect peers
+            nodeOne.SetupNodeConnection(nodeTwo);
+            nodeOne.SetupNodeConnection(nodeThree);
+            nodeTwo.SetupNodeConnection(nodeThree);
+
+            //nodeOne.DisconnectNode(nodeTwo);
+
+            nodeOne.ElectLeader();
+            nodeTwo.ElectLeader();
+            nodeThree.ElectLeader();
+
+            // Send messages between peers
+            nodeOne.SendMessage("Hello, Bob and Charlie!");
+            nodeTwo.SendMessage("Hi, Alice!");
+            nodeThree.SendMessage("Hey, everyone!");
+
             Console.ReadKey(true);
         }
+
+
 
         private static int GettingStringsNodeId(string sentence, int noOfReceiverNodes)
         {
@@ -91,6 +116,104 @@ namespace P2PStorage.APP
                 return originalNodeId+1;
             else
                 return originalNodeId - 1;
+        }
+    }
+
+    public class Node
+    {
+        private List<NodeTable> _nodeTable;
+        private List<ValueTable> _valueTable;
+
+        public int NodeId { get; }
+        public List<Node> ConnectedNodes { get; }
+        public NodeRoleEnum NodeRole { get; private set; }
+        public bool IsLeader { get; private set; }
+
+        public Node(int nodeId)
+        {
+            NodeId = nodeId;
+            ConnectedNodes = new List<Node>();
+        }
+
+        // Method to connect to another node
+        public void SetupNodeConnection(Node peer)
+        {
+            if (!ConnectedNodes.Contains(peer))
+            {
+                ConnectedNodes.Add(peer);
+                peer.ConnectedNodes.Add(this); // Bidirectional connection for simplicity
+                Console.WriteLine($"{NodeId} is now connected to {peer.NodeId}");
+            }
+            else
+            {
+                Console.WriteLine($"{NodeId} is already connected to {peer.NodeId}");
+            }
+        }
+
+        public void DisconnectNode(Node node)
+        {
+            if (ConnectedNodes.Contains(node))
+            {
+                ConnectedNodes.Remove(node);
+                node.ConnectedNodes.Remove(this); // Remove bidirectional connection
+                Console.WriteLine($"{NodeId} is disconnected from {node.NodeId}");
+            }
+            else
+            {
+                Console.WriteLine($"{NodeId} is not connected to {node.NodeId}");
+            }
+        }
+
+        public void ElectLeader()
+        {
+            // Check if this peer is the highest-ranked
+            if (ConnectedNodes.All(x => x.NodeId < NodeId))
+            {
+                IsLeader = true;
+                Console.WriteLine($"{NodeId} is elected as the leader.");
+                // Assign roles based on leadership
+                if (NodeId % 2 == 0)
+                {
+                    NodeRole = NodeRoleEnum.Hasher;
+                }
+                else
+                {
+                    NodeRole = NodeRoleEnum.Receiver;
+                }
+
+                // Notify other peers of the leader
+                foreach (var peer in ConnectedNodes)
+                {
+                    peer.NotifyNewLeader(this);
+                }
+            }
+        }
+
+        // Method to notify peers of the new leader
+        public void NotifyNewLeader(Node leader)
+        {
+            if (!IsLeader && leader.NodeId.CompareTo(NodeId) > 0)
+            {
+                Console.WriteLine($"{NodeId} received notification of new leader: {leader.NodeId}");
+                IsLeader = false;
+                NodeRole = NodeRoleEnum.Receiver;
+            }
+        }
+
+        // Method to send a message to all connected peers
+        public void SendMessage(string message)
+        {
+            Console.WriteLine($"{NodeId} sends: {message}");
+            foreach (var peer in ConnectedNodes)
+            {
+                peer.ReceiveMessage(message);
+            }
+        }
+
+        // Method to receive a message from another node
+        public void ReceiveMessage(string message)
+        {
+            Console.WriteLine($"{NodeId} receives: {message}");
         }
     }
 }
