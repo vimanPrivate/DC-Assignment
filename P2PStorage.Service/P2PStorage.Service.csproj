@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Node\Node.cs" />
     <Compile Include="Services\P2PStorageService.cs" />
     <Compile Include="Services\Node\NodeService.cs" />
     <Compile Include="Services\Process\LeaderService.cs" />

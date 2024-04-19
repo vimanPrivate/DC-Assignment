@@ -29,71 +29,40 @@ namespace P2PStorage.APP
                             "remembered as one of the most formidable lion coalitions in African wildlife history";
 
             var textList = text.Split('.').ToList();
-            var nodeList = new List<NodeService>();
+            var nodeList = new List<Node>();
 
-            // assining ids to nodes
-
-            int nID = 0;
-            for (int i = 0; i < (noOfNodes*2); i++)
+            for(int i = 0; i < (noOfNodes*2); i++)
             {
-                var node = new NodeService();
-
-                if (i % 2 == 1)
-                {
-                    node.nodeId = nID;
-                    node.Role = NodeRoleEnum.Receiver;
-                    nID++;
-                }
-                else
-                {
-                    node.Role = NodeRoleEnum.Hasher;
-                    node.nodeId = -i;
-                }
-                
-                nodeList.Add(node);
+                nodeList.Add(new Node(i));
             }
 
-            // assining string to the nodes 
+            CreateNodeConnection(nodeList);
+            ElectingALeader(nodeList);
 
-            foreach (var sentence in textList)
-            {
-                int nodeId = GettingStringsNodeId(sentence, nodeList.Where(x => x.Role == NodeRoleEnum.Receiver).ToList().Count);
-                int backupNodeId = GetBackupNodeId(nodeId);
+            //Node nodeOne = new Node(0);
+            //Node nodeTwo = new Node(1);
+            //Node nodeThree = new Node(2);
 
-                foreach (var node in nodeList)
-                {
-                    if (node.nodeId == nodeId || node.nodeId == backupNodeId)
-                    {
-                        node.AddValuesToValueTable(sentence);
-                    }
-                }
-            }
+            //// Connecting nodes
+            //nodeOne.SetupNodeConnection(nodeTwo);
+            //nodeOne.SetupNodeConnection(nodeThree);
+            //nodeTwo.SetupNodeConnection(nodeThree);
 
+            //// Disconnecting Nodes
+            ////nodeOne.DisconnectNode(nodeTwo);
 
-            Node nodeOne = new Node(0);
-            Node nodeTwo = new Node(1);
-            Node nodeThree = new Node(2);
+            //// Selecting Leader
+            //nodeOne.ElectLeader();
+            //nodeTwo.ElectLeader();
+            //nodeThree.ElectLeader();
 
-            // Connect peers
-            nodeOne.SetupNodeConnection(nodeTwo);
-            nodeOne.SetupNodeConnection(nodeThree);
-            nodeTwo.SetupNodeConnection(nodeThree);
-
-            //nodeOne.DisconnectNode(nodeTwo);
-
-            nodeOne.ElectLeader();
-            nodeTwo.ElectLeader();
-            nodeThree.ElectLeader();
-
-            // Send messages between peers
-            nodeOne.SendMessage("Hello, Bob and Charlie!");
-            nodeTwo.SendMessage("Hi, Alice!");
-            nodeThree.SendMessage("Hey, everyone!");
+            //// Send messages between peers
+            //nodeOne.SendMessage("Hello, Bob and Charlie!");
+            //nodeTwo.SendMessage("Hi, Alice!");
+            //nodeThree.SendMessage("Hey, everyone!");
 
             Console.ReadKey(true);
         }
-
-
 
         private static int GettingStringsNodeId(string sentence, int noOfReceiverNodes)
         {
@@ -117,103 +86,25 @@ namespace P2PStorage.APP
             else
                 return originalNodeId - 1;
         }
-    }
 
-    public class Node
-    {
-        private List<NodeTable> _nodeTable;
-        private List<ValueTable> _valueTable;
-
-        public int NodeId { get; }
-        public List<Node> ConnectedNodes { get; }
-        public NodeRoleEnum NodeRole { get; private set; }
-        public bool IsLeader { get; private set; }
-
-        public Node(int nodeId)
+        public static void CreateNodeConnection(List<Node> nodeList)
         {
-            NodeId = nodeId;
-            ConnectedNodes = new List<Node>();
-        }
-
-        // Method to connect to another node
-        public void SetupNodeConnection(Node peer)
-        {
-            if (!ConnectedNodes.Contains(peer))
+            for(int x = 0; x < nodeList.Count; x++)
             {
-                ConnectedNodes.Add(peer);
-                peer.ConnectedNodes.Add(this); // Bidirectional connection for simplicity
-                Console.WriteLine($"{NodeId} is now connected to {peer.NodeId}");
-            }
-            else
-            {
-                Console.WriteLine($"{NodeId} is already connected to {peer.NodeId}");
-            }
-        }
-
-        public void DisconnectNode(Node node)
-        {
-            if (ConnectedNodes.Contains(node))
-            {
-                ConnectedNodes.Remove(node);
-                node.ConnectedNodes.Remove(this); // Remove bidirectional connection
-                Console.WriteLine($"{NodeId} is disconnected from {node.NodeId}");
-            }
-            else
-            {
-                Console.WriteLine($"{NodeId} is not connected to {node.NodeId}");
-            }
-        }
-
-        public void ElectLeader()
-        {
-            // Check if this peer is the highest-ranked
-            if (ConnectedNodes.All(x => x.NodeId < NodeId))
-            {
-                IsLeader = true;
-                Console.WriteLine($"{NodeId} is elected as the leader.");
-                // Assign roles based on leadership
-                if (NodeId % 2 == 0)
+                var node = nodeList[x];
+                for(int y = x+1; y < nodeList.Count; y++)
                 {
-                    NodeRole = NodeRoleEnum.Hasher;
-                }
-                else
-                {
-                    NodeRole = NodeRoleEnum.Receiver;
-                }
-
-                // Notify other peers of the leader
-                foreach (var peer in ConnectedNodes)
-                {
-                    peer.NotifyNewLeader(this);
+                    node.SetupNodeConnection(nodeList[y]);
                 }
             }
         }
 
-        // Method to notify peers of the new leader
-        public void NotifyNewLeader(Node leader)
+        public static void ElectingALeader(List<Node> nodeList)
         {
-            if (!IsLeader && leader.NodeId.CompareTo(NodeId) > 0)
+            foreach(var node in nodeList)
             {
-                Console.WriteLine($"{NodeId} received notification of new leader: {leader.NodeId}");
-                IsLeader = false;
-                NodeRole = NodeRoleEnum.Receiver;
+                node.ElectLeader();
             }
-        }
-
-        // Method to send a message to all connected peers
-        public void SendMessage(string message)
-        {
-            Console.WriteLine($"{NodeId} sends: {message}");
-            foreach (var peer in ConnectedNodes)
-            {
-                peer.ReceiveMessage(message);
-            }
-        }
-
-        // Method to receive a message from another node
-        public void ReceiveMessage(string message)
-        {
-            Console.WriteLine($"{NodeId} receives: {message}");
         }
     }
 }
