@@ -38,6 +38,7 @@ namespace P2PStorage.APP
 
             CreateNodeConnection(nodeList);
             ElectingALeader(nodeList);
+            AssignRoles(nodeList);
 
             //Node nodeOne = new Node(0);
             //Node nodeTwo = new Node(1);
@@ -104,6 +105,14 @@ namespace P2PStorage.APP
             foreach(var node in nodeList)
             {
                 node.ElectLeader();
+            }
+        }
+
+        public static void AssignRoles(List<Node> nodeList)
+        {
+            foreach(var node in nodeList)
+            {
+                node.AssigningRoles();
             }
         }
     }

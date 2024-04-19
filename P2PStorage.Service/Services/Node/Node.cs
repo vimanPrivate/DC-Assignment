@@ -18,13 +18,17 @@ namespace P2PStorage.Service.Services.Node
         public NodeRoleEnum NodeRole { get; private set; }
         public bool IsLeader { get; private set; }
 
+        public Node()
+        {
+            ConnectedNodes = new List<Node>();
+        }
+
         public Node(int nodeId)
         {
             NodeId = nodeId;
             ConnectedNodes = new List<Node>();
         }
 
-        // Method to connect to another node
         public void SetupNodeConnection(Node peer)
         {
             if (!ConnectedNodes.Contains(peer))
@@ -60,11 +64,6 @@ namespace P2PStorage.Service.Services.Node
                 IsLeader = true;
                 Console.WriteLine($"{NodeId} is elected as the leader.");
 
-                if (NodeId % 2 == 0)
-                    NodeRole = NodeRoleEnum.Hasher;
-                else
-                    NodeRole = NodeRoleEnum.Receiver;
-
                 // Notify other peers of the leader
                 foreach (var peer in ConnectedNodes)
                 {
@@ -80,7 +79,7 @@ namespace P2PStorage.Service.Services.Node
             {
                 Console.WriteLine($"{NodeId} received notification of new leader: {leader.NodeId}");
                 IsLeader = false;
-                NodeRole = NodeRoleEnum.Receiver;
+                //NodeRole = NodeRoleEnum.Receiver;
             }
         }
 
@@ -88,13 +87,17 @@ namespace P2PStorage.Service.Services.Node
         {
             if (IsLeader)
             {
-                int totalNodesInTheSystem = ConnectedNodes.Count+1;
-                for(int x = 0; x < ConnectedNodes.Count;x++)
+                if (NodeId % 2 == 0)
+                    NodeRole = NodeRoleEnum.Receiver;
+                else
+                    NodeRole = NodeRoleEnum.Hasher;
+
+                foreach (var node in ConnectedNodes)
                 {
-                    if(x < totalNodesInTheSystem/2)
-                        ConnectedNodes[x].NodeRole = NodeRoleEnum.Receiver;
+                    if (node.NodeId % 2 == 0)
+                        node.NodeRole = NodeRoleEnum.Receiver;
                     else
-                        ConnectedNodes[x].NodeRole = NodeRoleEnum.Hasher;
+                        node.NodeRole = NodeRoleEnum.Hasher;
                 }
             }
         }
