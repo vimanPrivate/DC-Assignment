@@ -14,6 +14,17 @@ namespace P2PStorage.APP
     {
         static void Main(string[] args)
         {
+            /*
+             * Initial Process goes here
+             * Letting user select how many nodes does user wants ( for Demo only )
+             * Seperating entire paragraph by '.'
+             * Generating and linking nodes each other according to the user entered node count
+             * Selecting leader
+             * Assigning roles
+             * storing values to the nodes
+             */
+
+
             Console.Write("Enter number of nodes : ");
             int noOfNodes = int.Parse(Console.ReadLine());
 
@@ -29,7 +40,10 @@ namespace P2PStorage.APP
                             "remembered as one of the most formidable lion coalitions in African wildlife history";
 
             var textList = text.Split('.').ToList();
-            var nodeList = new List<Node>();
+
+            /*
+             * Initiating Nodes 
+            */
 
             int i = 0;
             Node initNode = null;
@@ -45,105 +59,23 @@ namespace P2PStorage.APP
             while (i < (noOfNodes * 2));
 
             initNode.ElectLeader();
-            //initNode.DisconnectNode(4);
             initNode.AssigningRoles();
+            initNode.DisconnectNode(1);
 
-            initNode.StoreTextValuesRequest(textList[0]);
-            initNode.StoreTextValuesRequest(textList[1]);
+            foreach(string sentence in textList) 
+            {
+                initNode.StoreTextValuesRequest(sentence);
+            }
+            
+
+
+
+
 
             var val1 = initNode.GetStoredTextValueRequest("The Mapogo");
             var val2 = initNode.GetStoredTextValueRequest(" The coali");
 
-            int xxxxxx = 00;
-
-            //for (int i = 0; i < (noOfNodes * 2); i++)
-            //{
-            //    nodeList.Add(new Node(i));
-            //}
-
-            //CreateNodeConnection(nodeList);
-            //ElectingALeader(nodeList);
-            //AssignRoles(nodeList);
-
-
-            // **************************************************************************************
-
-
-
-            //Node nodeOne = new Node(0);
-            //Node nodeTwo = new Node(1);
-            //Node nodeThree = new Node(2);
-
-            //// Connecting nodes
-            //nodeOne.SetupNodeConnection(nodeTwo);
-            //nodeOne.SetupNodeConnection(nodeThree);
-            //nodeTwo.SetupNodeConnection(nodeThree);
-
-            //// Disconnecting Nodes
-            ////nodeOne.DisconnectNode(nodeTwo);
-
-            //// Selecting Leader
-            //nodeOne.ElectLeader();
-            //nodeTwo.ElectLeader();
-            //nodeThree.ElectLeader();
-
-            //// Send messages between peers
-            //nodeOne.SendMessage("Hello, Bob and Charlie!");
-            //nodeTwo.SendMessage("Hi, Alice!");
-            //nodeThree.SendMessage("Hey, everyone!");
-
             Console.ReadKey(true);
-        }
-
-        private static int GettingStringsNodeId(string sentence, int noOfReceiverNodes)
-        {
-            int nodeId = 0;
-            int totalAsciiValue = 0;
-            string firstTenCharacters = sentence.Substring(0, Math.Min(sentence.Length, 10));
-
-            foreach (char c in firstTenCharacters)
-            {
-                totalAsciiValue += Convert.ToInt32(c);
-            }
-
-            nodeId = totalAsciiValue % noOfReceiverNodes;
-            return nodeId;
-        }
-
-        private static int GetBackupNodeId(int originalNodeId)
-        {
-            if (originalNodeId - 1 < 0)
-                return originalNodeId+1;
-            else
-                return originalNodeId - 1;
-        }
-
-        public static void CreateNodeConnection(List<Node> nodeList)
-        {
-            for(int x = 0; x < nodeList.Count; x++)
-            {
-                var node = nodeList[x];
-                for(int y = x+1; y < nodeList.Count; y++)
-                {
-                    //node.SetupNodeConnection(nodeList[y]);
-                }
-            }
-        }
-
-        public static void ElectingALeader(List<Node> nodeList)
-        {
-            foreach(var node in nodeList)
-            {
-                node.ElectLeader();
-            }
-        }
-
-        public static void AssignRoles(List<Node> nodeList)
-        {
-            foreach(var node in nodeList)
-            {
-                node.AssigningRoles();
-            }
         }
     }
 }

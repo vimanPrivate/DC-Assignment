@@ -54,38 +54,6 @@ namespace P2PStorage.Service.Services.Node
             }
         }
 
-
-        //public void SetupNodeConnection(Node peer)
-        //{
-        //    if (!ConnectedNodes.Contains(peer))
-        //    {
-        //        ConnectedNodes.Add(peer);
-        //        peer.ConnectedNodes.Add(this);
-        //        Console.WriteLine($"{NodeId} is now connected to {peer.NodeId}");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine($"{NodeId} is already connected to {peer.NodeId}");
-        //    }
-        //}
-
-        //public void DisconnectNode(int nodeId)
-        //{
-        //    Node nodeToRemove = ConnectedNodes.FirstOrDefault(node => node.NodeId == nodeId);
-        //    if (nodeToRemove != null)
-        //    {
-        //         Remove the node from the ConnectedNodes list of other nodes
-        //        foreach (var connectedNode in ConnectedNodes)
-        //        {
-        //            connectedNode.ConnectedNodes.Remove(this);
-        //        }
-        //         Clear the ConnectedNodes list of the node to remove
-        //        nodeToRemove.ConnectedNodes.Clear();
-        //         Remove the node from the ConnectedNodes list of this node
-        //        ConnectedNodes.Remove(nodeToRemove);
-        //    }
-        //}
-
         public void DisconnectNode(int nodeId)
         {
             if (nodeId == NodeId)
@@ -192,21 +160,6 @@ namespace P2PStorage.Service.Services.Node
             }
         }
 
-        //public void ElectLeader()
-        //{
-        //    if (ConnectedNodes.All(x => x.NodeId < NodeId))
-        //    {
-        //        IsLeader = true;
-        //        Console.WriteLine($"{NodeId} is elected as the leader.");
-
-        //        // Notify other peers of the leader
-        //        foreach (var peer in ConnectedNodes)
-        //        {
-        //            peer.NotifyNewLeader(this);
-        //        }
-        //    }
-        //}
-
         public void NotifyNewLeader(Node leader)
         {
             if (!IsLeader && leader.NodeId.CompareTo(NodeId) > 0)
@@ -282,7 +235,7 @@ namespace P2PStorage.Service.Services.Node
             {
                 if (node.NodeId == storingNodesArray[0] || node.NodeId == storingNodesArray[1])
                 {
-                    if(!node._valueTable.Any(row => row.Id == firstTenCharacters))
+                    if (!node._valueTable.Any(row => row.Id == firstTenCharacters))
                     {
                         node._valueTable.Add(new ValueTable()
                         {
@@ -303,7 +256,7 @@ namespace P2PStorage.Service.Services.Node
                                 Id = firstTenCharacters,
                                 Value = sentence
                             });
-                        } 
+                        }
                     }
                 }
             }
@@ -313,7 +266,6 @@ namespace P2PStorage.Service.Services.Node
         {
             int originalNode = 0;
             int totalAsciiValue = 0;
-            //string firstTenCharacters = sentence.Substring(0, Math.Min(sentence.Length, 10));
 
             foreach (char c in firstTenCharacters)
             {
@@ -400,7 +352,7 @@ namespace P2PStorage.Service.Services.Node
 
             foreach (var node in ConnectedNodes)
             {
-                if(node.NodeId == storingNodesArray[0] || node.NodeId == storingNodesArray[1])
+                if (node.NodeId == storingNodesArray[0] || node.NodeId == storingNodesArray[1])
                 {
                     if (node._valueTable.Any(tbl => tbl.Id == firstTenCharacters))
                         textValue = node._valueTable
@@ -413,39 +365,20 @@ namespace P2PStorage.Service.Services.Node
 
                 foreach (var innerNode in ConnectedNodes)
                 {
-                    //if(innerNode.NodeId == storingNodesArray[0] || innerNode.NodeId == storingNodesArray[1])
-                    //{
-                        if (innerNode.NodeId == storingNodesArray[0] || innerNode.NodeId == storingNodesArray[1])
-                        {
-                            if (innerNode._valueTable.Any(tbl => tbl.Id == firstTenCharacters))
-                                textValue = innerNode._valueTable
-                                                        .Where(tbl => tbl.Id == firstTenCharacters)
-                                                        .Select(row => row.Value)
-                                                        .FirstOrDefault();
+                    if (innerNode.NodeId == storingNodesArray[0] || innerNode.NodeId == storingNodesArray[1])
+                    {
+                        if (innerNode._valueTable.Any(tbl => tbl.Id == firstTenCharacters))
+                            textValue = innerNode._valueTable
+                                                    .Where(tbl => tbl.Id == firstTenCharacters)
+                                                    .Select(row => row.Value)
+                                                    .FirstOrDefault();
 
-                            return textValue;
-                        }
-                    //}
+                        return textValue;
+                    }
                 }
             }
 
             return textValue;
         }
-
-        //// Method to send a message to all connected peers
-        //public void SendMessage(string message)
-        //{
-        //    Console.WriteLine($"{NodeId} sends: {message}");
-        //    foreach (var peer in ConnectedNodes)
-        //    {
-        //        peer.ReceiveMessage(message);
-        //    }
-        //}
-
-        //// Method to receive a message from another node
-        //public void ReceiveMessage(string message)
-        //{
-        //    Console.WriteLine($"{NodeId} receives: {message}");
-        //}
     }
 }
