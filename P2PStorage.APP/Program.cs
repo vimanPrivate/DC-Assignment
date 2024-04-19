@@ -31,14 +31,37 @@ namespace P2PStorage.APP
             var textList = text.Split('.').ToList();
             var nodeList = new List<Node>();
 
-            for(int i = 0; i < (noOfNodes*2); i++)
+            int i = 0;
+            Node initNode = null;
+            do
             {
-                nodeList.Add(new Node(i));
-            }
+                if (i == 0)
+                    initNode = new Node(i);
+                else
+                    initNode.SetupNodeConnection(new Node(i));
 
-            CreateNodeConnection(nodeList);
-            ElectingALeader(nodeList);
-            AssignRoles(nodeList);
+                i++;
+            }
+            while (i < (noOfNodes * 2));
+
+            initNode.ElectLeader();
+            initNode.DisconnectNode(0);
+
+            int xxxxxx = 00;
+
+            //for (int i = 0; i < (noOfNodes * 2); i++)
+            //{
+            //    nodeList.Add(new Node(i));
+            //}
+
+            //CreateNodeConnection(nodeList);
+            //ElectingALeader(nodeList);
+            //AssignRoles(nodeList);
+
+
+            // **************************************************************************************
+
+
 
             //Node nodeOne = new Node(0);
             //Node nodeTwo = new Node(1);
@@ -95,7 +118,7 @@ namespace P2PStorage.APP
                 var node = nodeList[x];
                 for(int y = x+1; y < nodeList.Count; y++)
                 {
-                    node.SetupNodeConnection(nodeList[y]);
+                    //node.SetupNodeConnection(nodeList[y]);
                 }
             }
         }
