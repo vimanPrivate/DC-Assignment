@@ -372,10 +372,62 @@ namespace P2PStorage.Service.Services.Node
             return receiverNodeList;
         }
 
-        public string GetTextValueRequest(string firstTenCharacters)
+        public string GetStoredTextValueRequest(string firstTenCharacters)
+        {
+            if (this.NodeRole == NodeRoleEnum.Receiver)
+            {
+                foreach (var node in ConnectedNodes)
+                {
+                    if (node.NodeRole == NodeRoleEnum.Hasher)
+                    {
+                        return node.GetStoredTextValue(firstTenCharacters);
+                    }
+                }
+            }
+            else
+            {
+                return GetStoredTextValue(firstTenCharacters);
+            }
+
+            return null;
+        }
+
+        public string GetStoredTextValue(string firstTenCharacters)
         {
             string textValue = "";
+            int originalNodeId = GetOriginalNodeId(firstTenCharacters);
+            var storingNodesArray = GetPossibleNodeReceiverNodeList(originalNodeId);
 
+            foreach (var node in ConnectedNodes)
+            {
+                if(node.NodeId == storingNodesArray[0] || node.NodeId == storingNodesArray[1])
+                {
+                    if (node._valueTable.Any(tbl => tbl.Id == firstTenCharacters))
+                        textValue = node._valueTable
+                                            .Where(tbl => tbl.Id == firstTenCharacters)
+                                            .Select(row => row.Value)
+                                            .FirstOrDefault();
+
+                    return textValue;
+                }
+
+                foreach (var innerNode in ConnectedNodes)
+                {
+                    //if(innerNode.NodeId == storingNodesArray[0] || innerNode.NodeId == storingNodesArray[1])
+                    //{
+                        if (innerNode.NodeId == storingNodesArray[0] || innerNode.NodeId == storingNodesArray[1])
+                        {
+                            if (innerNode._valueTable.Any(tbl => tbl.Id == firstTenCharacters))
+                                textValue = innerNode._valueTable
+                                                        .Where(tbl => tbl.Id == firstTenCharacters)
+                                                        .Select(row => row.Value)
+                                                        .FirstOrDefault();
+
+                            return textValue;
+                        }
+                    //}
+                }
+            }
 
             return textValue;
         }

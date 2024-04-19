@@ -45,9 +45,14 @@ namespace P2PStorage.APP
             while (i < (noOfNodes * 2));
 
             initNode.ElectLeader();
-            //initNode.DisconnectNode(0);
+            //initNode.DisconnectNode(4);
             initNode.AssigningRoles();
+
+            initNode.StoreTextValuesRequest(textList[0]);
             initNode.StoreTextValuesRequest(textList[1]);
+
+            var val1 = initNode.GetStoredTextValueRequest("The Mapogo");
+            var val2 = initNode.GetStoredTextValueRequest(" The coali");
 
             int xxxxxx = 00;
 
