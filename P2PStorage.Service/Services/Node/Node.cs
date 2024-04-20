@@ -184,6 +184,67 @@ namespace P2PStorage.Service.Services.Node
             }
         }
 
+        public void AddNewNode(Node node)
+        {
+            node.NodeId = AssigningId();
+            node.NodeRole = AssigningRole(node.NodeId);
+            SetupNodeConnection(node);
+        }
+
+        public NodeRoleEnum AssigningRole(int nodeId)
+        {
+            var leaderNode = NavigateToLeaderNode();
+            return leaderNode.SetNewRole(nodeId);
+        }
+
+        private NodeRoleEnum SetNewRole(int nodeId)
+        {
+            if (nodeId % 2 == 0)
+                return NodeRoleEnum.Receiver;
+            else
+                return NodeRoleEnum.Hasher;
+        }
+
+        public int AssigningId()
+        {
+            var leaderNode = NavigateToLeaderNode();
+            return leaderNode.SetNewId();
+        }
+
+        private int SetNewId()
+        {
+            int maxNodeId = ConnectedNodes.Max(x => x.NodeId);
+            maxNodeId = this.NodeId > maxNodeId ? this.NodeId : maxNodeId;
+
+            return maxNodeId+1;
+        }
+
+        private bool IsLeaderExists()
+        {
+            if (this.IsLeader)
+                return true;
+            else if (ConnectedNodes.Any(x => x.IsLeader == true))
+                return true;
+
+            return false;
+        }
+
+        private Node NavigateToLeaderNode()
+        {
+            if (IsLeaderExists())
+            {
+                if (this.IsLeader)
+                    return this;
+                else 
+                    return ConnectedNodes.Where(x => x.IsLeader).FirstOrDefault();
+            }
+            else
+            {
+                ElectLeader();
+                return NavigateToLeaderNode();
+            }
+        }
+
         public void StoreTextValuesRequest(string sentence)
         {
             if (this.NodeRole == NodeRoleEnum.Receiver)

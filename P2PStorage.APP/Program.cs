@@ -61,6 +61,7 @@ namespace P2PStorage.APP
             initNode.ElectLeader();
             initNode.AssigningRoles();
             //initNode.DisconnectNode(1);
+            initNode.AddNewNode(new Node());
 
             foreach(string sentence in textList) 
             {
