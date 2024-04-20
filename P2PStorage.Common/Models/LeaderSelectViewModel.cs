@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P2PStorage.Service.Services.Process
+namespace P2PStorage.Common.Models
 {
-    internal class RetrievingService
+    internal class LeaderSelectViewModel
     {
     }
 }

@@ -46,7 +46,7 @@
     <Compile Include="Services\P2PStorageService.cs" />
     <Compile Include="Services\Node\NodeService.cs" />
     <Compile Include="Services\Process\LeaderService.cs" />
-    <Compile Include="Services\Process\RetrievingService.cs" />
+    <Compile Include="Services\Process\HasingService.cs" />
     <Compile Include="Services\Process\StoringService.cs" />
   </ItemGroup>
   <ItemGroup />

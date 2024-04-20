@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\NodeRoleEnum.cs" />
+    <Compile Include="Models\LeaderSelectViewModel.cs" />
     <Compile Include="Models\NodeTable.cs" />
     <Compile Include="Models\ValueTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -13,7 +13,7 @@ namespace P2PStorage.APP
     internal class Program
     {
         static void Main(string[] args)
-        {
+        {          
             /*
              * Initial Process goes here
              * Letting user select how many nodes does user wants ( for Demo only )
@@ -60,20 +60,21 @@ namespace P2PStorage.APP
 
             initNode.ElectLeader();
             initNode.AssigningRoles();
-            initNode.DisconnectNode(1);
+            //initNode.DisconnectNode(1);
 
             foreach(string sentence in textList) 
             {
                 initNode.StoreTextValuesRequest(sentence);
             }
-            
 
-
-
-
+            initNode.DisconnectNode(2);
+            initNode.DisconnectNode(4);
+            initNode.DisconnectNode(6);
 
             var val1 = initNode.GetStoredTextValueRequest("The Mapogo");
             var val2 = initNode.GetStoredTextValueRequest(" The coali");
+
+
 
             Console.ReadKey(true);
         }
